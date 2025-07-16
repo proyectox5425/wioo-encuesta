@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=0.75, maximum-scale=0.75, user-scalable=no" />
+  <title>Encuesta Operativa Wioo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    header {
+      background-color: #7344D0;
+      color: white;
+      padding: 18px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    header img {
+      height: 42px;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .contenido {
+      max-width: 440px;
+      margin: 20px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #7344D0;
+      border-bottom: 1px solid #7344D050;
+      padding-bottom: 6px;
+      margin-top: 24px;
+      margin-bottom: 0;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 14px;
+      display: block;
+      color: #333;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      margin-top: 6px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      height: 80px;
+      resize: vertical;
+    }
+
+    fieldset {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 14px;
+    }
+
+    legend {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #7344D0;
+      padding: 0 6px;
+    }
+
+    .checkboxes label {
+      display: block;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    button {
+      background-color: #7344D0;
+      color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+
+    .resultados {
+      background-color: #f8f8f8;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 2px 6px #00000010;
+    }
+
+    .resultados p {
+      font-size: 0.9rem;
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #eee;
+    }
+
+    .exportado {
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      background: #f2f2f2;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 16px;
+      display: none;
+    }
+  </style>
+  </head>
+  <body>
+  <header>
+    <img src="emoji-wioo-white.png" alt="Logo Wioo" />
+    <h1>Encuesta Operativa Wioo</h1>
+  </header>
+
+  <div class="contenido">
+
+    <h2>Datos Generales</h2>
+    <label>Terminal o empresa</label>
+    <select id="empresa">
+      <option value="">Selecciona</option>
+      <option>Terminal Oasis</option>
+      <option>Transporte El Sol</option>
+      <option>Terminal La Cima</option>
+      <option>Otra</option>
+    </select>
+
+    <label>Responsable que responde</label>
+    <select id="encuestado">
+      <option value="">Selecciona</option>
+      <option>Administrador</option>
+      <option>Gerente</option>
+      <option>Supervisor</option>
+      <option>Otro</option>
+    </select>
+
+    <h2>Flota y Rutas Cortas</h2>
+    <label>Cantidad de autobuses operativos</label>
+    <select id="buses">
+      <option value="">Selecciona</option>
+      <option>1-5</option>
+      <option>6-10</option>
+      <option>11-15</option>
+      <option>Más de 15</option>
+    </select>
+
+    <label>Rutas cortas activas</label>
+    <select id="rutas_cortas">
+      <option value="">Selecciona</option>
+      <option>0</option>
+      <option>1</option>
+      <option>2-3</option>
+      <option>4 o más</option>
+    </select>
+
+    <label>Frecuencia de rutas cortas</label>
+    <select id="freq_cortas">
+      <option value="">Selecciona</option>
+      <option>Cada 30 min</option>
+      <option>Cada 1 hora</option>
+      <option>Cada 2 horas</option>
+      <option>Una vez al día</option>
+    </select>
+
+    <label>Viajes diarios en rutas cortas</label>
+    <select id="viajes_cortos_dia">
+      <option value="">Selecciona</option>
+      <option>1-5</option>
+      <option>6-10</option>
+      <option>11-15</option>
+      <option>Más de 15</option>
+    </select>
+
+    <label>Viajes semanales en rutas cortas</label>
+    <select id="viajes_cortos_semana">
+      <option value="">Selecciona</option>
+      <option>Menos de 10</option>
+      <option>10-30</option>
+      <option>31-50</option>
+      <option>Más de 50</option>
+    </select>
+
+    <h2>Rutas Largas</h2>
+    <label>Cantidad de rutas largas</label>
+    <select id="rutas_largas">
+      <option value="">Selecciona</option>
+      <option>0</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3 o más</option>
+    </select>
+
+    <label>Frecuencia de rutas largas</label>
+    <select id="freq_largas">
+      <option value="">Selecciona</option>
+      <option>Cada 2 horas</option>
+      <option>Cada 6 horas</option>
+      <option>Una vez al día</option>
+      <option>Solo fines de semana</option>
+    </select>
+
+    <label>Viajes diarios en rutas largas</label>
+    <select id="viajes_largos_dia">
+      <option value="">Selecciona</option>
+      <option>1-3</option>
+      <option>4-6</option>
+      <option>Más de 6</option>
+    </select>
+
+    <label>Viajes semanales en rutas largas</label>
+    <select id="viajes_largos_semana">
+      <option value="">Selecciona</option>
+      <option>Menos de 10</option>
+      <option>10-20</option>
+      <option>21-40</option>
+      <option>Más de 40</option>
+    </select>
+
+    <h2>Perfil Operativo</h2>
+    <label>Usuarios atendidos con mayor frecuencia</label>
+    <select id="usuarios">
+      <option value="">Selecciona</option>
+      <option>Escolares</option>
+      <option>Trabajadores</option>
+      <option>Turistas</option>
+      <option>Mixto</option>
+    </select>
+
+    <label>Días de operación</label>
+    <select id="dias_activos">
+      <option value="">Selecciona</option>
+      <option>Solo semana</option>
+      <option>Sábado y semana</option>
+      <option>Todos los días</option>
+    </select>
+
+    <label>Métodos de pago aceptados</label>
+    <select id="pagos">
+      <option value="">Selecciona</option>
+      <option>Solo efectivo</option>
+      <option>Pago móvil</option>
+      <option>Punto de venta</option>
+      <option>Ambos</option>
+    </select>
+
+    <label>Estado general de los autobuses</label>
+    <select id="estado_flota">
+      <option value="">Selecciona</option>
+      <option>Excelente</option>
+      <option>Regular</option>
+      <option>Crítica</option>
+      <option>Mixta</option>
+    </select>
+
+    <label>Área de cobertura</label>
+    <select id="cobertura">
+      <option value="">Selecciona</option>
+      <option>Municipal</option>
+      <option>Intermunicipal</option>
+      <option>Estadual</option>
+      <option>Nacional</option>
+    </select>
+
+    <fieldset>
+      <legend>Observaciones operativas</legend>
+      <div class="checkboxes">
+        <label><input type="checkbox" value="Buses deteriorados" /> Buses deteriorados</label>
+        <label><input type="checkbox" value="Horarios desorganizados" /> Horarios desorganizados</label>
+        <label><input type="checkbox" value="Poca demanda" /> Poca demanda</label>
+        <label><input type="checkbox" value="Infraestructura deficiente" /> Infraestructura deficiente</label>
+        <label><input type="checkbox" value="Falta de señalización" /> Falta de señalización</label>
+        <label><input type="checkbox" value="Otro" /> Otro</label>
+      </div>
+    </fieldset>
+
+    <button onclick="guardarEncuesta()">Guardar Encuesta</button>
+    <div class="resultados">
+      <h2>Resumen General</h2>
+      <p><strong>Encuestas realizadas:</strong> <span id="totalEncuestas">0</span></p>
+      <table id="tablaDatos">
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Responsable</th>
+            <th>Usuarios</th>
+            <th>Buses</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <button onclick="exportarDatos()">Exportar Datos</button>
+      <pre id="exportado" class="exportado"></pre>
+    </div>
+  </div>
+
+  <script>
+    let db;
+    indexedDB.open("EncuestaWiooDB", 1).onupgradeneeded = e => {
+      db = e.target.result;
+      db.createObjectStore("respuestas", { autoIncrement: true });
+    };
+    indexedDB.open("EncuestaWiooDB", 1).onsuccess = e => {
+      db = e.target.result;
+      mostrarResumen();
+    };
+
+    function val(id) {
+      return document.getElementById(id).value;
+    }
+
+    function guardarEncuesta() {
+      const observaciones = Array.from(document.querySelectorAll(".checkboxes input:checked"))
+        .map(cb => cb.value);
+      const data = {
+        empresa: val("empresa"),
+        encuestado: val("encuestado"),
+        buses: val("buses"),
+        rutas_cortas: val("rutas_cortas"),
+        freq_cortas: val("freq_cortas"),
+        viajes_cortos_dia: val("viajes_cortos_dia"),
+        viajes_cortos_semana: val("viajes_cortos_semana"),
+        rutas_largas: val("rutas_largas"),
+        freq_largas: val("freq_largas"),
+        viajes_largos_dia: val("viajes_largos_dia"),
+        viajes_largos_semana: val("viajes_largos_semana"),
+        usuarios: val("usuarios"),
+        dias_activos: val("dias_activos"),
+        pagos: val("pagos"),
+        estado_flota: val("estado_flota"),
+        cobertura: val("cobertura"),
+        observaciones,
+        fecha: new Date().toLocaleString()
+      };
+
+      const tx = db.transaction("respuestas", "readwrite");
+      tx.objectStore("respuestas").add(data);
+      tx.oncomplete = () => {
+        alert("✅ Encuesta guardada.");
+        mostrarResumen();
+      };
+    }
+
+    function mostrarResumen() {
+      const tx = db.transaction("respuestas", "readonly");
+      const store = tx.objectStore("respuestas");
+      store.getAll().onsuccess = e => {
+        const datos = e.target.result;
+        document.getElementById("totalEncuestas").textContent = datos.length;
+        const tbody = document.querySelector("#tablaDatos tbody");
+        tbody.innerHTML = "";
+        datos.forEach(item => {
+          const fila = document.createElement("tr");
+          fila.innerHTML = `
+            <td>${item.empresa}</td>
+            <td>${item.encuestado}</td>
+            <td>${item.usuarios}</td>
+            <td>${item.buses}</td>
+          `;
+          tbody.appendChild(fila);
+        });
+      };
+    }
+
+    function exportarDatos() {
+      const tx = db.transaction("respuestas", "readonly");
+      const store = tx.objectStore("respuestas");
+      store.getAll().onsuccess = e => {
+        const datos = JSON.stringify(e.target.result, null, 2);
+        const bloque = document.getElementById("exportado");
+        bloque.textContent = datos;
+        bloque.style.display = "block";
+        navigator.clipboard.writeText(datos);
+        alert("📋 Datos exportados al portapapeles.");
+      };
+    }
+  </script>
+</body>
+  </html>
