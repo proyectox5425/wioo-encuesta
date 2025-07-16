@@ -317,6 +317,15 @@
       <h2>Resumen General</h2>
       <p><strong>Encuestas realizadas:</strong> <span id="totalEncuestas">0</span></p>
       <table id="tablaDatos">
+        <h2>Análisis Operativo</h2>
+<p><strong>Promedio de autobuses por empresa:</strong> <span id="promedioBuses">–</span></p>
+<p><strong>Estado de flota más común:</strong> <span id="estadoFlotaDominante">–</span></p>
+<p><strong>Perfil de usuarios dominante:</strong> <span id="perfilDominante">–</span></p>
+<p><strong>Método de pago más usado:</strong> <span id="pagoDominante">–</span></p>
+<p><strong>Área de cobertura más frecuente:</strong> <span id="coberturaDominante">–</span></p>
+      <h2>Reporte PDF</h2>
+<p>Descarga un resumen en PDF con gráficos y datos acumulados de las encuestas realizadas.</p>
+<button onclick="generarReportePDF()">📥 Descargar reporte PDF</button>
         <thead>
           <tr>
             <th>Empresa</th>
@@ -331,7 +340,6 @@
       <pre id="exportado" class="exportado"></pre>
     </div>
   </div>
-
   <script>
     let db;
     indexedDB.open("EncuestaWiooDB", 1).onupgradeneeded = e => {
@@ -380,24 +388,66 @@
     }
 
     function mostrarResumen() {
-      const tx = db.transaction("respuestas", "readonly");
-      const store = tx.objectStore("respuestas");
-      store.getAll().onsuccess = e => {
-        const datos = e.target.result;
-        document.getElementById("totalEncuestas").textContent = datos.length;
-        const tbody = document.querySelector("#tablaDatos tbody");
-        tbody.innerHTML = "";
-        datos.forEach(item => {
-          const fila = document.createElement("tr");
-          fila.innerHTML = `
-            <td>${item.empresa}</td>
-            <td>${item.encuestado}</td>
-            <td>${item.usuarios}</td>
-            <td>${item.buses}</td>
-          `;
-          tbody.appendChild(fila);
-        });
-      };
+  const tx = db.transaction("respuestas", "readonly");
+  const store = tx.objectStore("respuestas");
+  store.getAll().onsuccess = e => {
+    const datos = e.target.result;
+    const total = datos.length;
+    document.getElementById("totalEncuestas").textContent = total;
+
+    // Tabla principal
+    const tbody = document.querySelector("#tablaDatos tbody");
+    tbody.innerHTML = "";
+    datos.forEach(item => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${item.empresa}</td>
+        <td>${item.encuestado}</td>
+        <td>${item.usuarios}</td>
+        <td>${item.buses}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+
+    // Métricas agrupadas
+    const contadores = {
+      buses: 0,
+      estado_flota: {},
+      usuarios: {},
+      pagos: {},
+      cobertura: {}
+    };
+
+    datos.forEach(item => {
+      // Contador de buses si está en formato numérico o rango
+      const buses = parseInt(item.buses.match(/\d+/)?.[0]) || 0;
+      contadores.buses += buses;
+
+      const claves = ["estado_flota", "usuarios", "pagos", "cobertura"];
+      claves.forEach(k => {
+        const val = item[k];
+        if (val) {
+          contadores[k][val] = (contadores[k][val] || 0) + 1;
+        }
+      });
+    });
+
+    // Promedio de buses por empresa
+    const promedioBuses = contadores.buses && total ? (contadores.buses / total).toFixed(1) : "–";
+    document.getElementById("promedioBuses").textContent = promedioBuses;
+
+    // Función auxiliar para encontrar el valor más frecuente
+    function dominante(obj) {
+      return Object.entries(obj)
+        .sort((a, b) => b[1] - a[1])[0]?.[0] || "–";
+    }
+
+    document.getElementById("estadoFlotaDominante").textContent = dominante(contadores.estado_flota);
+    document.getElementById("perfilDominante").textContent = dominante(contadores.usuarios);
+    document.getElementById("pagoDominante").textContent = dominante(contadores.pagos);
+    document.getElementById("coberturaDominante").textContent = dominante(contadores.cobertura);
+  };
+    }
     }
 
     function exportarDatos() {
@@ -412,6 +462,97 @@
         alert("📋 Datos exportados al portapapeles.");
       };
     }
+
+    async function generarReportePDF() {
+  const tx = db.transaction("respuestas", "readonly");
+  const store = tx.objectStore("respuestas");
+  store.getAll().onsuccess = async e => {
+    const datos = e.target.result;
+    const total = datos.length;
+
+    const contadores = {
+      estado_flota: {},
+      usuarios: {},
+      cobertura: {}
+    };
+
+    datos.forEach(item => {
+      ["estado_flota", "usuarios", "cobertura"].forEach(k => {
+        const val = item[k];
+        if (val) {
+          contadores[k][val] = (contadores[k][val] || 0) + 1;
+        }
+      });
+    });
+
+    // Dominantes
+    const dominante = obj => Object.entries(obj).sort((a, b) => b[1] - a[1])[0]?.[0] || "–";
+    const flota = dominante(contadores.estado_flota);
+    const usuarios = dominante(contadores.usuarios);
+    const cobertura = dominante(contadores.cobertura);
+
+    // Gráficas virtuales (canvas ocultos)
+    const graficos = {
+      flota: generarGrafico("Estado flota", contadores.estado_flota),
+      usuarios: generarGrafico("Perfil usuarios", contadores.usuarios),
+      cobertura: generarGrafico("Cobertura", contadores.cobertura)
+    };
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Reporte Institucional Wioo", 14, 20);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 30);
+    doc.text(`Total de encuestas realizadas: ${total}`, 14, 40);
+    doc.text(`Estado de flota más frecuente: ${flota}`, 14, 50);
+    doc.text(`Perfil de usuarios dominante: ${usuarios}`, 14, 60);
+    doc.text(`Cobertura urbana más repetida: ${cobertura}`, 14, 70);
+
+    let y = 80;
+    for (const [nombre, canvas] of Object.entries(graficos)) {
+      const imgData = canvas.toDataURL("image/png");
+      doc.addImage(imgData, "PNG", 14, y, 90, 50);
+      y += 60;
+    }
+
+    doc.save("reporte-wioo.pdf");
+  };
+}
+
+// 🎨 Función para generar gráfica en canvas oculto
+function generarGrafico(titulo, data) {
+  const canvas = document.createElement("canvas");
+  canvas.width = 300;
+  canvas.height = 150;
+  const ctx = canvas.getContext("2d");
+  new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: Object.keys(data),
+      datasets: [{
+        data: Object.values(data),
+        backgroundColor: ["#7344D0", "#FFB347", "#88CC88", "#DD4444", "#999999"]
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: true },
+        title: {
+          display: true,
+          text: titulo
+        }
+      }
+    }
+  });
+  return canvas;
+    }
   </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
   </html>
